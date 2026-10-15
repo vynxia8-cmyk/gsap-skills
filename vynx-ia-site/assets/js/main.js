@@ -64,19 +64,17 @@
     links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        links.forEach(function (l) { l.classList.remove("is-active"); l.removeAttribute("aria-current"); });
         var link = map[entry.target.id];
-        if (!link) return;
-        if (entry.isIntersecting) {
-          links.forEach(function (l) { l.classList.remove("is-active"); l.removeAttribute("aria-current"); });
+        if (link) {
           link.classList.add("is-active");
           link.setAttribute("aria-current", "true");
         }
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
-    Object.keys(map).forEach(function (id) {
-      var section = document.getElementById(id);
-      if (section) observer.observe(section);
-    });
+    // Todas as seções, inclusive as sem link no menu, para limpar o destaque quando o visitante sai delas
+    document.querySelectorAll("main > section[id]").forEach(function (section) { observer.observe(section); });
   }
 
   /* ---------- Menu mobile ---------- */
@@ -86,12 +84,19 @@
     var label = document.querySelector("[data-menu-label]");
     var main = document.getElementById("conteudo");
     var footer = document.querySelector(".site-footer");
+    var outside = [document.querySelector(".skip-link"), document.querySelector(".site-header .brand")].filter(Boolean);
     if (!toggle || !menu) return;
     var isOpen = false;
     var closeTimer;
 
+    // Ordem de tabulação real: o botão vem antes do menu no HTML
     function focusables() {
-      return Array.prototype.slice.call(menu.querySelectorAll("a, button")).concat([toggle]);
+      return [toggle].concat(Array.prototype.slice.call(menu.querySelectorAll("a, button")));
+    }
+    function setOutsideInert(value) {
+      if (main) main.inert = value;
+      if (footer) footer.inert = value;
+      outside.forEach(function (el) { el.inert = value; });
     }
 
     function open() {
@@ -103,8 +108,7 @@
       toggle.setAttribute("aria-expanded", "true");
       label.textContent = "Fechar menu";
       document.body.classList.add("menu-open");
-      if (main) main.inert = true;
-      if (footer) footer.inert = true;
+      setOutsideInert(true);
       var first = menu.querySelector("a");
       if (first) first.focus({ preventScroll: true });
     }
@@ -116,8 +120,7 @@
       toggle.setAttribute("aria-expanded", "false");
       label.textContent = "Abrir menu";
       document.body.classList.remove("menu-open");
-      if (main) main.inert = false;
-      if (footer) footer.inert = false;
+      setOutsideInert(false);
       closeTimer = setTimeout(function () { menu.hidden = true; }, reduceMotion.matches ? 0 : 250);
       if (returnFocus) toggle.focus();
     }
@@ -155,9 +158,14 @@
     return node;
   }
 
+  /* Cada conceito demonstrativo tem a própria estrutura de página (concept.layout):
+     "split" e "center": abertura clássica com título, texto e botão;
+     "lookbook": marca grande e uma grade de peças, como numa vitrine de moda;
+     "list": a lista de serviços vem primeiro e o agendamento vira uma barra de largura total. */
   function buildMini(concept, isPhone) {
     var theme = concept.theme || {};
-    var mini = el("div", "mini mini--" + (concept.layout || "split") + (theme.font ? " mini--font-" + theme.font : "") + (isPhone ? " mini--phone" : ""));
+    var layout = concept.layout || "split";
+    var mini = el("div", "mini mini--" + layout + (theme.font ? " mini--font-" + theme.font : "") + (isPhone ? " mini--phone" : ""));
     mini.style.setProperty("--mini-bg", theme.bg);
     mini.style.setProperty("--mini-fg", theme.fg);
     mini.style.setProperty("--mini-muted", theme.muted);
@@ -168,21 +176,38 @@
     (concept.nav || []).forEach(function (item) { nav.appendChild(el("span", "", item)); });
     mini.appendChild(nav);
 
+    if (layout === "lookbook") {
+      mini.appendChild(el("b", "mini-h", concept.headline));
+      var grid = el("div", "mini-pieces");
+      (concept.pieces || []).forEach(function (piece) {
+        var tile = el("span", "mini-piece");
+        tile.style.setProperty("--tone", piece.tone);
+        tile.appendChild(el("span", "", piece.name));
+        grid.appendChild(tile);
+      });
+      mini.appendChild(grid);
+      mini.appendChild(el("span", "mini-btn", concept.cta));
+      return mini;
+    }
+
+    if (layout === "list") {
+      mini.appendChild(el("b", "mini-h", concept.headline));
+      var ul = el("ul", "mini-list");
+      (concept.list || []).forEach(function (item) { ul.appendChild(el("li", "", item)); });
+      mini.appendChild(ul);
+      if (concept.text) mini.appendChild(el("span", "mini-text", concept.text));
+      mini.appendChild(el("span", "mini-bar", concept.cta));
+      return mini;
+    }
+
     var hero = el("div", "mini-hero");
     var copy = el("div", "mini-copy");
-    copy.appendChild(el("span", "mini-eyebrow", concept.eyebrow));
+    if (concept.eyebrow) copy.appendChild(el("span", "mini-eyebrow", concept.eyebrow));
     copy.appendChild(el("b", "mini-h", concept.headline));
     if (concept.text) copy.appendChild(el("span", "mini-text", concept.text));
-    copy.appendChild(el("span", "mini-btn", concept.cta));
+    copy.appendChild(el("span", concept.ctaStyle === "link" ? "mini-link" : "mini-btn", concept.cta));
     hero.appendChild(copy);
-
-    var art = el("div", "mini-art art-" + (concept.art || "arch"));
-    if (concept.list) {
-      var ul = el("ul", "mini-list");
-      concept.list.forEach(function (item) { ul.appendChild(el("li", "", item)); });
-      art.appendChild(ul);
-    }
-    hero.appendChild(art);
+    hero.appendChild(el("div", "mini-art art-" + (concept.art || "arch")));
     mini.appendChild(hero);
     return mini;
   }
@@ -241,7 +266,7 @@
       var meta = el("p", "project-meta");
       if (project.demo) {
         meta.appendChild(el("span", "project-demo", "Projeto demonstrativo"));
-        meta.appendChild(document.createTextNode(" · "));
+        meta.appendChild(el("span", "project-sep", " · "));
       }
       meta.appendChild(document.createTextNode(project.type));
       info.appendChild(meta);
@@ -315,9 +340,9 @@
         steps.forEach(function (step) {
           ScrollTrigger.create({
             trigger: step,
-            start: "top 70%",
+            start: "top 85%",
+            once: true,
             onEnter: function () { step.classList.add("is-active"); },
-            onLeaveBack: function () { step.classList.remove("is-active"); },
           });
         });
       }
@@ -341,5 +366,7 @@
   setupHeader();
   setupMenu();
   renderProjects();
-  setupMotion();
+  // O main.js carrega antes do GSAP; o DOMContentLoaded só dispara depois de todos os scripts "defer"
+  if (window.gsap && window.ScrollTrigger) setupMotion();
+  else document.addEventListener("DOMContentLoaded", setupMotion, { once: true });
 })();
