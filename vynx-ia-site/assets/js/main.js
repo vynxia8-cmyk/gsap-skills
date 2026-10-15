@@ -286,7 +286,9 @@
     gsap.registerPlugin(ScrollTrigger);
     gsap.defaults({ ease: "power2.out", duration: 0.6 });
 
+    // O callback só roda quando alguma condição é verdadeira: "motion" garante que rode também no celular
     gsap.matchMedia().add({
+      motion: "(prefers-reduced-motion: no-preference)",
       reduce: "(prefers-reduced-motion: reduce)",
       desktop: "(min-width: 960px)",
     }, function (context) {
