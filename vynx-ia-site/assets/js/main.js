@@ -294,8 +294,9 @@
       if (c.reduce) { showAll(); return; }
 
       gsap.utils.toArray("[data-tail]").forEach(function (tail) {
-        gsap.fromTo(tail, { autoAlpha: 0, y: "0.12em" }, {
-          autoAlpha: 1,
+        // Só opacidade: o final continua no texto lido por leitores de tela
+        gsap.fromTo(tail, { opacity: 0, y: "0.12em" }, {
+          opacity: 1,
           y: 0,
           scrollTrigger: { trigger: tail.closest("h2"), start: "top 85%", once: true },
         });
