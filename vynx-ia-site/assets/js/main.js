@@ -34,9 +34,16 @@
       el.hidden = !hasWhatsApp;
     });
 
+    // Número visível no rodapé, gerado a partir do config.js para nunca divergir do link
+    var waLabel = document.querySelector("[data-whatsapp-label]");
+    if (waLabel && hasWhatsApp) {
+      var m = number.replace(/^55/, "").match(/^(\d{2})(\d{4,5})(\d{4})$/);
+      if (m) waLabel.textContent = "(" + m[1] + ") " + m[2] + "-" + m[3];
+    }
+
     var note = document.querySelector("[data-contact-note]");
     if (note && !hasWhatsApp) {
-      note.textContent = "A conversa abre no Direct do Instagram oficial da Vynx IA.";
+      note.textContent = "Abre o Direct do @vynxia__ no Instagram.";
     }
   }
 
@@ -111,7 +118,7 @@
       document.body.classList.remove("menu-open");
       if (main) main.inert = false;
       if (footer) footer.inert = false;
-      closeTimer = setTimeout(function () { menu.hidden = true; }, reduceMotion.matches ? 0 : 400);
+      closeTimer = setTimeout(function () { menu.hidden = true; }, reduceMotion.matches ? 0 : 250);
       if (returnFocus) toggle.focus();
     }
 
@@ -150,7 +157,7 @@
 
   function buildMini(concept, isPhone) {
     var theme = concept.theme || {};
-    var mini = el("div", "mini mini--" + (concept.layout || "split") + (theme.font === "serif" ? " mini--serif" : "") + (isPhone ? " mini--phone" : ""));
+    var mini = el("div", "mini mini--" + (concept.layout || "split") + (theme.font ? " mini--font-" + theme.font : "") + (isPhone ? " mini--phone" : ""));
     mini.style.setProperty("--mini-bg", theme.bg);
     mini.style.setProperty("--mini-fg", theme.fg);
     mini.style.setProperty("--mini-muted", theme.muted);
@@ -165,13 +172,17 @@
     var copy = el("div", "mini-copy");
     copy.appendChild(el("span", "mini-eyebrow", concept.eyebrow));
     copy.appendChild(el("b", "mini-h", concept.headline));
-    var lines = el("span", "mini-p");
-    lines.appendChild(el("i"));
-    lines.appendChild(el("i"));
-    copy.appendChild(lines);
+    if (concept.text) copy.appendChild(el("span", "mini-text", concept.text));
     copy.appendChild(el("span", "mini-btn", concept.cta));
     hero.appendChild(copy);
-    hero.appendChild(el("div", "mini-art art-" + (concept.art || "soft")));
+
+    var art = el("div", "mini-art art-" + (concept.art || "arch"));
+    if (concept.list) {
+      var ul = el("ul", "mini-list");
+      concept.list.forEach(function (item) { ul.appendChild(el("li", "", item)); });
+      art.appendChild(ul);
+    }
+    hero.appendChild(art);
     mini.appendChild(hero);
     return mini;
   }
@@ -189,48 +200,55 @@
     return buildMini(concept, isPhone);
   }
 
+  function buildBrowser(project) {
+    var browser = el("div", "browser");
+    // A barra nunca mostra um domínio: os demonstrativos não estão publicados
+    browser.appendChild(el("div", "browser-bar", project.title + (project.demo ? " · conceito demonstrativo" : "")));
+    var view = el("div", "browser-view");
+    view.appendChild(buildScreen(project, false));
+    browser.appendChild(view);
+    return browser;
+  }
+
+  function buildPhone(project) {
+    var phone = el("div", "phone");
+    var display = el("div", "phone-display");
+    display.appendChild(buildScreen(project, true));
+    phone.appendChild(display);
+    return phone;
+  }
+
   function renderProjects() {
     var list = document.querySelector("[data-projects]");
     var projects = window.VYNX_PROJECTS || [];
     if (!list || !projects.length) return;
 
     projects.forEach(function (project) {
-      var article = el("article", "project");
-      article.setAttribute("data-reveal-project", "");
+      var wide = project.frame === "desktop";
+      var article = el("article", "project project--" + (wide ? "feature" : "phone"));
 
-      // Mockups
       var media = el("div", "project-media");
-      var devices = el("div", "devices");
-      var laptop = el("div", "laptop");
-      var screen = el("div", "laptop-screen");
-      var display = el("div", "laptop-display");
-      display.appendChild(buildScreen(project, false));
-      screen.appendChild(display);
-      laptop.appendChild(screen);
-      laptop.appendChild(el("div", "laptop-base"));
-      devices.appendChild(laptop);
-
-      var phone = el("div", "phone");
-      var phoneDisplay = el("div", "phone-display");
-      phoneDisplay.appendChild(buildScreen(project, true));
-      phone.appendChild(phoneDisplay);
-      devices.appendChild(phone);
-      media.appendChild(devices);
-
+      media.style.setProperty("--plate", project.plate || "#1c201e");
+      if (wide) media.appendChild(buildBrowser(project));
+      media.appendChild(buildPhone(project));
       if (project.demo) {
         media.setAttribute("role", "img");
-        media.setAttribute("aria-label", "Mockup demonstrativo do conceito " + project.title + " em computador e celular");
-        devices.setAttribute("aria-hidden", "true");
+        media.setAttribute("aria-label", "Projeto demonstrativo " + project.title + ": prévia da página inicial");
+        Array.prototype.forEach.call(media.children, function (child) { child.setAttribute("aria-hidden", "true"); });
       }
 
-      // Informações
       var info = el("div", "project-info");
-      if (project.demo) info.appendChild(el("span", "badge-demo", "Projeto demonstrativo"));
-      info.appendChild(el("p", "project-type", project.type));
+      var meta = el("p", "project-meta");
+      if (project.demo) {
+        meta.appendChild(el("span", "project-demo", "Projeto demonstrativo"));
+        meta.appendChild(document.createTextNode(" · "));
+      }
+      meta.appendChild(document.createTextNode(project.type));
+      info.appendChild(meta);
       info.appendChild(el("h3", "project-title", project.title));
       info.appendChild(el("p", "project-summary", project.summary));
       if (project.url) {
-        var link = el("a", "btn btn--ghost btn--small project-link", "Visitar o site");
+        var link = el("a", "btn btn--ghost btn--small project-link", project.demo ? "Abrir o conceito demonstrativo" : "Visitar o site");
         link.href = project.url;
         link.target = "_blank";
         link.rel = "noopener";
@@ -243,127 +261,65 @@
     });
   }
 
-  /* ---------- Animações (GSAP + ScrollTrigger) ---------- */
+  /* ---------- Movimento (GSAP + ScrollTrigger) ----------
+     Quatro momentos, todos tirados do vídeo da marca:
+     1. o V se monta e "à altura." pousa (só CSS, no styles.css);
+     2. os finais em Bodoni dos títulos pousam quando o título entra na tela;
+     3. as etapas do Processo acendem em ordem;
+     4. nos Serviços, as outras linhas recuam sob o cursor (só CSS).
+     Nada mais se move: sem fade-up na rolagem, sem parallax, sem loops. */
   function setupMotion() {
     var gsap = window.gsap;
     var ScrollTrigger = window.ScrollTrigger;
+    var steps = Array.prototype.slice.call(document.querySelectorAll("[data-step]"));
+    var progress = document.querySelector("[data-steps-progress]");
+    // Se a rede atrasou e a rede de segurança já revelou tudo, não esconde nada de novo
+    var late = !root.classList.contains("motion");
 
-    if (!gsap || !ScrollTrigger) {
+    function showAll() {
       root.classList.remove("motion");
-      setupStepsFallback();
-      return;
+      steps.forEach(function (s) { s.classList.add("is-active"); });
+      if (progress) progress.style.transform = "none";
     }
+
+    if (!gsap || !ScrollTrigger || late) { showAll(); return; }
     gsap.registerPlugin(ScrollTrigger);
+    gsap.defaults({ ease: "power2.out", duration: 0.6 });
 
-    var mm = gsap.matchMedia();
-
-    mm.add({
-      animate: "(prefers-reduced-motion: no-preference)",
+    gsap.matchMedia().add({
       reduce: "(prefers-reduced-motion: reduce)",
       desktop: "(min-width: 960px)",
     }, function (context) {
       var c = context.conditions;
+      if (c.reduce) { showAll(); return; }
 
-      if (c.reduce) {
-        root.classList.remove("motion");
-        gsap.set("[data-steps-progress]", { scaleY: 1 });
-        gsap.utils.toArray("[data-step]").forEach(function (s) { s.classList.add("is-active"); });
-        return;
-      }
-
-      root.classList.add("motion");
-
-      // Hero: sequência única de entrada
-      var planes = gsap.utils.toArray("[data-plane]");
-      var hero = gsap.timeline({ defaults: { ease: "expo.out" } });
-      hero
-        .to(".hero-title .line-inner", { y: 0, duration: 1.3, stagger: 0.09 }, 0.15)
-        .to("[data-hero-item]", { opacity: 1, duration: 1, stagger: 0.12 }, 0.55)
-        .from("[data-hero-item]", { y: 18, duration: 1, stagger: 0.12, clearProps: "transform" }, 0.55)
-        .from("[data-hero-visual]", { opacity: 0, duration: 1.4, ease: "power2.out" }, 0.3)
-        .fromTo(planes, { "--z": "0px" }, {
-          "--z": function (i) { return (i * 70) + "px"; },
-          duration: 1.8,
-          stagger: 0.08,
-        }, 0.5);
-
-      // Respiração discreta das camadas
-      gsap.to(planes[2], { "--z": "152px", duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 2.4 });
-
-      // Profundidade sutil acompanhando o cursor (apenas dispositivos com ponteiro fino)
-      var stack = document.querySelector("[data-stack]");
-      if (stack && window.matchMedia("(pointer: fine)").matches) {
-        gsap.set(stack, { rotationX: 56, rotationZ: -36 });
-        var rx = gsap.quickTo(stack, "rotationX", { duration: 1.2, ease: "power3.out" });
-        var rz = gsap.quickTo(stack, "rotationZ", { duration: 1.2, ease: "power3.out" });
-        var onMove = function (e) {
-          var nx = e.clientX / window.innerWidth - 0.5;
-          var ny = e.clientY / window.innerHeight - 0.5;
-          rx(56 - ny * 8);
-          rz(-36 + nx * 10);
-        };
-        window.addEventListener("pointermove", onMove, { passive: true });
-        context.add(function () { window.removeEventListener("pointermove", onMove); });
-      }
-
-      // Ao rolar, o hero se afasta suavemente
-      gsap.to("[data-hero-visual]", {
-        yPercent: c.desktop ? 18 : 8,
-        opacity: 0.35,
-        ease: "none",
-        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
-      });
-
-      // Entradas na rolagem
-      ScrollTrigger.batch("[data-reveal]", {
-        start: "top 88%",
-        once: true,
-        onEnter: function (batch) {
-          gsap.fromTo(batch, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.08, overwrite: true, clearProps: "transform" });
-        },
-      });
-
-      // Projetos: mockups sobem com leve profundidade
-      gsap.utils.toArray("[data-reveal-project]").forEach(function (project) {
-        var laptop = project.querySelector(".laptop");
-        var phone = project.querySelector(".phone");
-        var info = project.querySelector(".project-info");
-        var tl = gsap.timeline({ scrollTrigger: { trigger: project, start: "top 80%", once: true } });
-        tl.from(laptop, { y: 50, opacity: 0, duration: 1.2, ease: "power3.out" })
-          .from(phone, { y: 80, opacity: 0, duration: 1.2, ease: "power3.out" }, 0.15)
-          .from(info, { y: 24, opacity: 0, duration: 1, ease: "power3.out" }, 0.25);
-        gsap.to(phone, {
-          yPercent: -10,
-          ease: "none",
-          scrollTrigger: { trigger: project, start: "top bottom", end: "bottom top", scrub: true },
+      gsap.utils.toArray("[data-tail]").forEach(function (tail) {
+        gsap.fromTo(tail, { autoAlpha: 0, y: "0.12em" }, {
+          autoAlpha: 1,
+          y: 0,
+          scrollTrigger: { trigger: tail.closest("h2"), start: "top 85%", once: true },
         });
       });
 
-      // Processo: linha de progresso acompanha a leitura
-      var steps = gsap.utils.toArray("[data-step]");
-      gsap.fromTo("[data-steps-progress]", { scaleY: 0 }, {
-        scaleY: 1,
-        ease: "none",
-        scrollTrigger: { trigger: "[data-steps]", start: "top 65%", end: "bottom 65%", scrub: 0.6 },
-      });
-      steps.forEach(function (step) {
-        ScrollTrigger.create({
-          trigger: step,
-          start: "top 65%",
-          onEnter: function () { step.classList.add("is-active"); },
-          onLeaveBack: function () { step.classList.remove("is-active"); },
+      if (c.desktop) {
+        gsap.set(progress, { scaleX: 0 });
+        var tl = gsap.timeline({ scrollTrigger: { trigger: "[data-steps]", start: "top 75%", once: true } });
+        tl.to(progress, { scaleX: 1, duration: 1.2, ease: "none" }, 0);
+        steps.forEach(function (step, i) {
+          tl.call(function () { step.classList.add("is-active"); }, null, i * 0.3);
         });
-      });
+      } else {
+        steps.forEach(function (step) {
+          ScrollTrigger.create({
+            trigger: step,
+            start: "top 70%",
+            onEnter: function () { step.classList.add("is-active"); },
+            onLeaveBack: function () { step.classList.remove("is-active"); },
+          });
+        });
+      }
 
-      // Símbolo da chamada comercial
-      gsap.fromTo(".cta-mark", { yPercent: 12, rotation: -4 }, {
-        yPercent: -6,
-        rotation: 0,
-        ease: "none",
-        scrollTrigger: { trigger: ".cta", start: "top bottom", end: "bottom top", scrub: true },
-      });
-
-      return function () { root.classList.remove("motion"); };
+      return function () { steps.forEach(function (s) { s.classList.remove("is-active"); }); };
     });
 
     root.classList.add("motion-ready");
@@ -372,10 +328,6 @@
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
     }
-  }
-
-  function setupStepsFallback() {
-    document.querySelectorAll("[data-step]").forEach(function (s) { s.classList.add("is-active"); });
   }
 
   /* ---------- Inicialização ---------- */

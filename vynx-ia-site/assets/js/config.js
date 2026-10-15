@@ -13,9 +13,9 @@ window.VYNX_CONFIG = {
   /** Mensagens iniciais preenchidas na conversa do WhatsApp. */
   messages: {
     projeto:
-      "Olá, Vynx IA! Vim pelo site e gostaria de conversar sobre o projeto do site da minha empresa.",
+      "Oi! Vim pelo site da Vynx IA e quero conversar sobre um site para a minha empresa.",
     orcamento:
-      "Olá, Vynx IA! Vim pelo site e gostaria de solicitar um orçamento para um site ou landing page.",
+      "Oi! Vim pelo site da Vynx IA e quero um orçamento de site ou landing page.",
   },
 
   /** Perfil oficial no Instagram (sem @). */
