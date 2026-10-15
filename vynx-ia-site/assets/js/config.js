@@ -6,9 +6,9 @@ window.VYNX_CONFIG = {
   /**
    * Número do WhatsApp comercial no formato internacional, apenas dígitos.
    * Exemplo de formato: "55" + DDD + número  →  "55DDNNNNNNNNN".
-   * Enquanto estiver vazio, os botões de conversa abrem o Direct do Instagram oficial.
+   * Se ficar vazio, os botões de conversa abrem o Direct do Instagram oficial.
    */
-  whatsappNumber: "",
+  whatsappNumber: "5591991404323",
 
   /** Mensagens iniciais preenchidas na conversa do WhatsApp. */
   messages: {
