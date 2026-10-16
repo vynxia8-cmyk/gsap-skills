@@ -18,6 +18,8 @@ assets/css/styles.css    Identidade visual (tokens no topo do arquivo), layout e
 assets/js/config.js      WhatsApp, mensagens iniciais e Instagram  ← edite aqui
 assets/js/projects.js    Lista de projetos do portfólio             ← adicione projetos aqui
 assets/js/main.js        Menu mobile, links de contato, portfólio e animações
+assets/js/hero3d.js      V em 3D (three.js) do topo e da chamada final — arquivo gerado, não editar
+src/hero3d.js            Fonte do V em 3D (edite aqui e gere o assets/js/hero3d.js de novo)
 assets/vendor/           GSAP 3.13.0 e ScrollTrigger
 assets/img/              Favicon, símbolo da marca, ícone Apple e imagem de compartilhamento
 ```
@@ -51,9 +53,21 @@ A seção Projetos está pronta, mas fica oculta (junto com os links "Projetos" 
 - Se houver política de privacidade, inclua o link no rodapé.
 - Qualquer hospedagem estática funciona (Vercel, Netlify, GitHub Pages, Cloudflare Pages).
 
+## Animações 3D
+
+- **Topo:** o V da marca é desenhado em 3D com estilhaços metálicos facetados. Ao abrir a página, os estilhaços se juntam e formam o V; no computador ele acompanha levemente o cursor. Ao rolar, o topo fica fixo por um instante e o V se desfaz em partículas (no celular, o V fica esmaecido atrás do título e se desfaz quando o topo sai da tela).
+- **Chamada final (computador):** os estilhaços se juntam de novo e remontam o V conforme a seção entra na tela.
+- O 3D só carrega depois da página pronta, com WebGL disponível, sem "movimento reduzido" e sem modo de economia de dados. Em qualquer outro caso fica o símbolo em SVG, e nada muda no conteúdo.
+- O arquivo `assets/js/hero3d.js` é gerado a partir de `src/hero3d.js` com o [three.js](https://threejs.org) (licença MIT, aviso no fim do arquivo). Para gerar de novo depois de editar:
+
+```bash
+npm i three@0.186.0 esbuild
+npx esbuild src/hero3d.js --bundle --format=esm --minify --target=es2019 --legal-comments=eof --outfile=assets/js/hero3d.js
+```
+
 ## Acessibilidade e movimento
 
-- O movimento se resume a quatro momentos: o V do topo se monta e "à altura." aparece; os finais em Bodoni dos títulos de Serviços, Processo e Chamada comercial surgem quando o título entra na tela; as etapas do Processo acendem em ordem; e, nos Serviços, as outras linhas recuam sob o cursor. Não há animação em loop, parallax ou efeito de entrada em cada bloco.
+- Além do 3D, o movimento se resume a poucos momentos: os finais em Bodoni dos títulos de Serviços, Processo e Chamada comercial surgem quando o título entra na tela; as etapas do Processo acendem em ordem; e, nos Serviços, as outras linhas recuam sob o cursor. Não há animação em loop nem efeito de entrada em cada bloco.
 - Conteúdo visível mesmo sem JavaScript. Se o GSAP demorar mais de 2,5 s para carregar, tudo é revelado e nada volta a se esconder.
 - `prefers-reduced-motion` mostra tudo de uma vez, sem animação.
 - Menu mobile com `aria-expanded`, foco preso no menu, fechamento com Esc e restante da página `inert` enquanto aberto.

@@ -294,6 +294,87 @@
     }
   }
 
+  /* ---------- V em 3D no topo ----------
+     Só carrega depois da página, com WebGL disponível, sem "movimento reduzido" e sem economia de dados.
+     Sem isso, fica o símbolo em SVG. */
+  function canUse3D() {
+    if (reduceMotion.matches) return false;
+    if (navigator.connection && navigator.connection.saveData) return false;
+    try {
+      var c = document.createElement("canvas");
+      return !!(c.getContext("webgl2") || c.getContext("webgl"));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function setup3D() {
+    var holder = document.querySelector("[data-hero-3d]");
+    var hero = document.querySelector(".hero");
+    if (!holder || !hero || !canUse3D()) return;
+    var mobile = !window.matchMedia("(min-width: 960px)").matches;
+    var url = new URL("assets/js/hero3d.js", document.baseURI).href;
+
+    import(url).then(function (mod) {
+      var ctrl = mod.mountV(holder, {
+        layout: mobile ? "hero-mobile" : "hero",
+        onReady: function () {
+          holder.classList.add("is-ready");
+          hero.classList.add("has-3d");
+        },
+      });
+
+      // Com a rolagem, o V se desfaz em partículas. No computador o topo fica fixo enquanto isso,
+      // mas só se o visitante ainda estiver no topo (evita um salto na página).
+      var gsap = window.gsap;
+      var ScrollTrigger = window.ScrollTrigger;
+      if (!gsap || !ScrollTrigger) return;
+      var state = { p: 0 };
+      var pin = !mobile && window.scrollY < 40;
+      gsap.to(state, {
+        p: 1,
+        ease: "none",
+        onUpdate: function () {
+          ctrl.setScatter(state.p);
+          // no computador, as partículas esmaecem enquanto se afastam
+          if (!mobile) holder.style.opacity = String(1 - state.p * 0.65);
+        },
+        scrollTrigger: {
+          trigger: hero,
+          start: "top top",
+          end: pin ? "+=70%" : "bottom top",
+          pin: pin,
+          scrub: 0.6,
+        },
+      });
+      if (pin) ScrollTrigger.refresh();
+
+      // Fecho da página: na chamada final, os estilhaços se juntam de novo (só no computador)
+      var ctaHolder = document.querySelector("[data-cta-3d]");
+      if (!mobile && ctaHolder) {
+        var cta = mod.mountV(ctaHolder, {
+          layout: "fit",
+          palette: "paper",
+          assemble: "scroll",
+          onReady: function () { ctaHolder.classList.add("is-ready"); },
+        });
+        var back = { p: 0 };
+        gsap.to(back, {
+          p: 1,
+          ease: "none",
+          onUpdate: function () { cta.setAssemble(back.p); },
+          scrollTrigger: { trigger: "#contato", start: "top 85%", end: "top 15%", scrub: 0.6 },
+        });
+      }
+    }).catch(function () { /* sem 3D: o SVG continua no lugar */ });
+  }
+
+  function schedule3D() {
+    var run = function () { (window.requestIdleCallback || setTimeout)(setup3D, { timeout: 1500 }); };
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run, { once: true });
+  }
+
   /* ---------- Inicialização ---------- */
   var year = document.querySelector("[data-year]");
   if (year) year.textContent = new Date().getFullYear();
@@ -305,4 +386,5 @@
   // O main.js carrega antes do GSAP; o DOMContentLoaded só dispara depois de todos os scripts "defer"
   if (window.gsap && window.ScrollTrigger) setupMotion();
   else document.addEventListener("DOMContentLoaded", setupMotion, { once: true });
+  schedule3D();
 })();
