@@ -35,10 +35,11 @@
     });
 
     // Número visível no rodapé, gerado a partir do config.js para nunca divergir do link
-    var waLabel = document.querySelector("[data-whatsapp-label]");
-    if (waLabel && hasWhatsApp) {
-      var m = number.replace(/^55/, "").match(/^(\d{2})(\d{4,5})(\d{4})$/);
-      if (m) waLabel.textContent = "(" + m[1] + ") " + m[2] + "-" + m[3];
+    var m = number.replace(/^55/, "").match(/^(\d{2})(\d{4,5})(\d{4})$/);
+    if (m && hasWhatsApp) {
+      document.querySelectorAll("[data-whatsapp-label]").forEach(function (waLabel) {
+        waLabel.textContent = "(" + m[1] + ") " + m[2] + "-" + m[3];
+      });
     }
 
     var note = document.querySelector("[data-contact-note]");
@@ -47,7 +48,8 @@
     }
   }
 
-  /* ---------- Cabeçalho ---------- */
+  /* ---------- Cabeçalho ----------
+     A aba atual já vem marcada no HTML (aria-current="page"); aqui só o fundo ao rolar. */
   function setupHeader() {
     var header = document.querySelector("[data-header]");
     if (!header) return;
@@ -56,25 +58,6 @@
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-
-    // Link ativo de acordo com a seção visível
-    var links = Array.prototype.slice.call(document.querySelectorAll(".main-nav a"));
-    if (!("IntersectionObserver" in window) || !links.length) return;
-    var map = {};
-    links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        links.forEach(function (l) { l.classList.remove("is-active"); l.removeAttribute("aria-current"); });
-        var link = map[entry.target.id];
-        if (link) {
-          link.classList.add("is-active");
-          link.setAttribute("aria-current", "true");
-        }
-      });
-    }, { rootMargin: "-45% 0px -50% 0px" });
-    // Todas as seções, inclusive as sem link no menu, para limpar o destaque quando o visitante sai delas
-    document.querySelectorAll("main > section[id]").forEach(function (section) { observer.observe(section); });
   }
 
   /* ---------- Menu mobile ---------- */
@@ -226,7 +209,7 @@
      Quatro momentos, todos tirados do vídeo da marca:
      1. o V se monta e "à altura." pousa (só CSS, no styles.css);
      2. os finais em Bodoni dos títulos pousam quando o título entra na tela;
-     3. as etapas do Processo acendem em ordem;
+     3. as etapas de "Como trabalhamos" acendem em ordem;
      4. nos Serviços, as outras linhas recuam sob o cursor (só CSS).
      Nada mais se move: sem fade-up na rolagem, sem parallax, sem loops. */
   function setupMotion() {
@@ -265,7 +248,8 @@
         });
       });
 
-      if (c.desktop) {
+      if (!steps.length) return;
+      if (c.desktop && progress) {
         gsap.set(progress, { scaleX: 0 });
         var tl = gsap.timeline({ scrollTrigger: { trigger: "[data-steps]", start: "top 75%", once: true } });
         tl.to(progress, { scaleX: 1, duration: 1.2, ease: "none" }, 0);

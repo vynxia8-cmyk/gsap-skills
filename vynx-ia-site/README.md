@@ -12,17 +12,23 @@ python3 -m http.server 8080
 
 ## Estrutura
 
+O site tem cinco abas, cada uma em uma página própria, com o mesmo cabeçalho e o mesmo rodapé:
+
 ```
-index.html               Conteúdo e estrutura das 8 seções
+index.html               Início: topo com o V em 3D, resumo de quem somos, serviços e etapas, chamada comercial
+quem-somos.html          Quem somos: por que a Vynx IA existe, no que acredita e para quem faz
+servicos.html            Serviços: os quatro formatos em detalhe e o que vem em cada projeto
+como-trabalhamos.html    Como trabalhamos: as quatro etapas e as perguntas frequentes
+contato.html             Contato: WhatsApp, Instagram e o que acontece depois da mensagem
 assets/css/styles.css    Identidade visual (tokens no topo do arquivo), layout e responsividade
 assets/js/config.js      WhatsApp, mensagens iniciais e Instagram  ← edite aqui
 assets/js/projects.js    Lista de projetos do portfólio             ← adicione projetos aqui
 assets/js/main.js        Menu mobile, links de contato, portfólio e animações
-assets/js/hero3d.js      V em 3D (three.js) do topo e da chamada final — arquivo gerado, não editar
-src/hero3d.js            Fonte do V em 3D (edite aqui e gere o assets/js/hero3d.js de novo)
 assets/vendor/           GSAP 3.13.0 e ScrollTrigger
 assets/img/              Favicon, símbolo da marca, ícone Apple e imagem de compartilhamento
 ```
+
+O cabeçalho e o rodapé se repetem nas cinco páginas. Ao mudar um link ou um texto deles, mude em todas. A aba atual é marcada com `aria-current="page"` no link do menu.
 
 ## Configurar o WhatsApp
 
@@ -43,13 +49,13 @@ A seção Projetos está pronta, mas fica oculta (junto com os links "Projetos" 
 
 ## Identidade visual
 
-- Base grafite com dois cortes em papel: Posicionamento e Chamada comercial. Para colocar outra seção em papel, adicione a classe `on-paper`; as cores dos textos se ajustam sozinhas.
+- Base grafite com cortes em papel (Posicionamento, Chamada comercial e um bloco em cada aba). Para colocar outra seção em papel, adicione a classe `on-paper`; as cores dos textos se ajustam sozinhas.
 - Sálvia é o único acento. Sobre papel, use `--sage-ink` (a sálvia clara não tem contraste suficiente ali).
 - Montserrat em caixa alta para títulos, Bodoni Moda itálica só em finais de até três palavras (como "à altura." e "melhor.") e nos números, Schibsted Grotesk para leitura.
 
 ## Antes de publicar
 
-- Troque `og:image` em `index.html` pela URL absoluta do domínio (ex.: `https://seudominio.com.br/assets/img/og-image.png`) e adicione `<link rel="canonical">`.
+- Em cada página, troque `og:image` pela URL absoluta do domínio (ex.: `https://seudominio.com.br/assets/img/og-image.png`) e adicione `<link rel="canonical">`.
 - Se houver política de privacidade, inclua o link no rodapé.
 - Qualquer hospedagem estática funciona (Vercel, Netlify, GitHub Pages, Cloudflare Pages).
 
