@@ -469,7 +469,6 @@ html:not(.js) .menu-toggle { display: none; }
 }
 
 /* ---------- 03 · Serviços ---------- */
-.services { padding-bottom: var(--space-s); }
 .serv-grid { display: grid; gap: 2.5rem; }
 .services .section-head { margin-bottom: 0; }
 @media (min-width: 960px) {
@@ -545,10 +544,7 @@ html:not(.js) .menu-toggle { display: none; }
 }
 
 /* ---------- 04 · Projetos ---------- */
-.projects { padding-top: var(--space-s); }
 .proj-head { max-width: none; }
-.proj-head .section-intro { max-width: 56ch; }
-.noscript-note { color: var(--muted); }
 
 .project-list { display: grid; gap: clamp(3.5rem, 7vw, 6rem); }
 @media (min-width: 960px) {
@@ -556,7 +552,7 @@ html:not(.js) .menu-toggle { display: none; }
   .project--feature { grid-column: 1 / -1; }
 }
 
-/* Placa lisa na cor da marca do projeto; o aparelho sobe da borda inferior */
+/* Placa lisa na cor da marca do cliente; o aparelho sobe da borda inferior */
 .project-media {
   position: relative;
   display: flex;
@@ -626,11 +622,6 @@ html:not(.js) .menu-toggle { display: none; }
 
 .project-info { display: grid; gap: 0.5rem; margin-top: 1.25rem; }
 .project-meta { font-size: var(--fs-small); color: var(--muted); }
-.project-demo { color: var(--text); font-weight: 600; }
-@media (min-width: 960px) {
-  .project--feature .project-demo { display: block; }
-  .project--feature .project-sep { display: none; }
-}
 .project-title {
   font-family: var(--f-display);
   font-weight: 800;
@@ -647,164 +638,6 @@ html:not(.js) .menu-toggle { display: none; }
   .project--feature .project-title { grid-column: 4 / span 4; }
   .project--feature .project-summary { grid-column: 8 / -1; }
 }
-
-/* Mini-sites dos conceitos, dimensionados pela largura da tela do aparelho */
-.mini {
-  container-type: inline-size;
-  position: relative;
-  width: 100%; height: 100%;
-  overflow: hidden;
-  background: var(--mini-bg);
-  color: var(--mini-fg);
-  font-family: var(--f-body);
-}
-.mini-nav {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 4cqw;
-  padding: 3.2cqw 5cqw;
-  font-size: 1.55cqw;
-}
-.mini-logo { margin-right: auto; font-family: var(--f-display); font-weight: 800; font-size: 1.9cqw; letter-spacing: 0.08em; text-transform: uppercase; }
-.mini-nav span { color: var(--mini-muted); }
-.mini-hero { position: relative; display: grid; height: calc(100% - 9.6cqw); }
-.mini--split .mini-hero { grid-template-columns: 1fr 1fr; }
-.mini-copy { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; padding: 6cqw 5cqw; }
-.mini--center .mini-copy { align-items: center; justify-content: center; padding-top: 0; text-align: center; }
-.mini-eyebrow { margin-bottom: 1.6cqw; font-size: 1.45cqw; color: var(--mini-accent); }
-.mini-h { max-width: 14ch; font-family: var(--f-display); font-weight: 800; font-size: 4.8cqw; line-height: 1.04; letter-spacing: -0.02em; }
-.mini--center .mini-h { max-width: 12ch; font-size: 6cqw; }
-.mini-text { display: block; max-width: 32ch; margin-top: 2cqw; font-size: 1.5cqw; line-height: 1.45; color: var(--mini-muted); }
-.mini-btn {
-  margin-top: 3.4cqw;
-  padding: 1.5cqw 2.6cqw;
-  border-radius: 0.8cqw;
-  background: var(--mini-fg);
-  color: var(--mini-bg);
-  font-size: 1.5cqw;
-  font-weight: 600;
-}
-.mini-link {
-  margin-top: 3.4cqw;
-  font-size: 1.5cqw;
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 0.5cqw;
-  text-decoration-thickness: 0.15cqw;
-}
-.mini-art { position: relative; overflow: hidden; }
-
-/* lookbook: marca grande e grade de peças */
-.mini--lookbook .mini-h { display: block; max-width: none; padding: 2cqw 5cqw 0; font-size: 6cqw; }
-.mini-pieces { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5cqw; padding: 3cqw 5cqw 0; }
-.mini-piece {
-  position: relative;
-  aspect-ratio: 3 / 4;
-  border-radius: 0.6cqw;
-  background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 3px), var(--tone);
-}
-.mini-piece span { position: absolute; left: 1.2cqw; bottom: 1cqw; font-size: 1.3cqw; font-weight: 600; color: #1f2a2e; }
-.mini--lookbook .mini-btn { display: block; margin: 3cqw 5cqw 0; text-align: center; }
-
-/* list: a lista vem primeiro e o agendamento vira uma barra de largura total */
-.mini--list .mini-h { display: block; max-width: none; padding: 1cqw 5cqw 0; font-size: 4cqw; }
-.mini--list .mini-list { margin: 2cqw 5cqw 0; }
-.mini--list .mini-text { padding: 0 5cqw; }
-.mini-bar {
-  display: block;
-  margin-top: 3cqw;
-  padding: 2cqw;
-  background: var(--mini-accent);
-  color: #fff;
-  text-align: center;
-  font-size: 1.6cqw;
-  font-weight: 700;
-}
-.mini--center .mini-art { position: absolute; inset: 0; z-index: 0; }
-
-/* Cada marca fictícia tem a própria tipografia */
-.mini--font-garamond .mini-h,
-.mini--font-garamond .mini-logo { font-family: "Cormorant Garamond", var(--f-serif); font-weight: 500; text-transform: none; letter-spacing: 0; }
-.mini--font-garamond .mini-h { font-size: 5.4cqw; line-height: 1.05; }
-.mini--font-syne .mini-h,
-.mini--font-syne .mini-logo { font-family: "Syne", var(--f-display); font-weight: 700; }
-.mini--font-nunito .mini-h,
-.mini--font-nunito .mini-logo { font-family: "Nunito", var(--f-display); font-weight: 800; }
-
-.art-arch {
-  margin: 0 5cqw 5cqw 0;
-  border-radius: 1cqw;
-  background:
-    linear-gradient(90deg, transparent 18%, rgba(29, 31, 28, 0.08) 18% 19%, transparent 19% 49%, rgba(29, 31, 28, 0.08) 49% 50%, transparent 50%),
-    linear-gradient(180deg, #d5cdbf 0 58%, #bfb39f 58% 100%);
-}
-.art-arch::before {
-  content: "";
-  position: absolute;
-  left: 24%; bottom: 0;
-  width: 36%; height: 72%;
-  border-radius: 999px 999px 0 0;
-  background: linear-gradient(180deg, #8d8270, #6e6455);
-}
-.art-arch::after {
-  content: "";
-  position: absolute;
-  right: 10%; bottom: 0;
-  width: 22%; height: 44%;
-  background: #f2efe8;
-}
-.art-waves {
-  /* uma linha de horizonte, nada mais */
-  background:
-    linear-gradient(180deg, transparent 74%, rgba(243, 239, 231, 0.14) 74% calc(74% + 1px), transparent calc(74% + 1px)),
-    var(--mini-bg);
-}
-.mini-list li {
-  display: flex;
-  justify-content: space-between;
-  padding: 2cqw 0;
-  border-bottom: 1px solid rgba(24, 48, 43, 0.12);
-  font-size: 1.6cqw;
-  font-weight: 600;
-  color: var(--mini-fg);
-}
-.mini-list li::after { content: "›"; color: var(--mini-accent); }
-
-/* versão celular do mini-site */
-.mini--phone .mini-nav { padding: 12cqw 7cqw 5cqw; font-size: 5cqw; }
-.mini--phone .mini-nav span { display: none; }
-.mini--phone .mini-nav::after {
-  content: "";
-  width: 7cqw; height: 4cqw;
-  background:
-    linear-gradient(currentColor 0 0) top / 100% 1px no-repeat,
-    linear-gradient(currentColor 0 0) bottom / 100% 1px no-repeat;
-}
-.mini--phone .mini-logo { font-size: 5.4cqw; }
-.mini--phone .mini-hero { display: flex; flex-direction: column; height: auto; }
-.mini--phone .mini-copy { padding: 6cqw 7cqw; }
-.mini--phone .mini-eyebrow { margin-bottom: 3cqw; font-size: 4.4cqw; }
-.mini--phone .mini-h { font-size: 11cqw; }
-.mini--phone.mini--font-garamond .mini-h { font-size: 12cqw; }
-.mini--phone .mini-text { margin-top: 4cqw; font-size: 4.2cqw; }
-.mini--phone .mini-btn { margin-top: 7cqw; padding: 4cqw 6cqw; border-radius: 2cqw; font-size: 4.4cqw; }
-.mini--phone .mini-link { margin-top: 7cqw; font-size: 4.4cqw; text-underline-offset: 1.2cqw; text-decoration-thickness: 0.4cqw; }
-.mini--phone.mini--lookbook .mini-h { padding: 1cqw 7cqw 0; font-size: 10cqw; line-height: 1.02; }
-.mini--phone .mini-pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3cqw; padding: 6cqw 7cqw 0; }
-.mini--phone .mini-piece { border-radius: 1.5cqw; }
-.mini--phone .mini-piece span { left: 2.6cqw; bottom: 2.2cqw; font-size: 3.4cqw; }
-.mini--phone.mini--lookbook .mini-btn { margin: 5cqw 7cqw 0; }
-.mini--phone.mini--list .mini-h { padding: 3cqw 7cqw 0; font-size: 10cqw; }
-.mini--phone.mini--list .mini-list { margin: 3cqw 7cqw 0; }
-.mini--phone.mini--list .mini-text { padding: 0 7cqw; }
-.mini--phone .mini-bar { margin-top: 6cqw; padding: 5cqw 7cqw; font-size: 4.4cqw; }
-.mini--phone .mini-art { position: relative; inset: auto; height: 70cqw; margin: 4cqw 7cqw 0; border-radius: 3cqw; }
-.mini--phone .mini-list li { padding: 3.6cqw 0; font-size: 4.4cqw; }
-.mini--phone.mini--center .mini-art { position: absolute; inset: 0; height: 100%; margin: 0; border-radius: 0; }
-.mini--phone.mini--center .mini-hero { position: absolute; inset: 0; display: grid; place-items: center; height: auto; }
-.mini--phone.mini--center .mini-copy { padding: 22cqw 7cqw 0; }
 
 /* ---------- 05 · Diferenciais ---------- */
 .dif-main { display: grid; gap: 3.5rem; margin-bottom: var(--space-s); }

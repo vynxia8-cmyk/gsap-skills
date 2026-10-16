@@ -30,13 +30,14 @@ Enquanto o número estiver vazio, esses botões abrem o Direct do Instagram ofic
 
 ## Adicionar um projeto ao portfólio
 
-Inclua um objeto em `assets/js/projects.js` (o comentário no topo do arquivo traz o modelo completo).
+A seção Projetos está pronta, mas fica oculta (junto com os links "Projetos" do menu e do rodapé) enquanto `assets/js/projects.js` estiver vazio. Ao incluir o primeiro projeto, tudo aparece sozinho.
 
+- Salve as capturas de tela em `assets/img/projetos/` (computador 1440×900 e celular 390×844, de preferência em `.webp`).
+- Inclua um objeto em `assets/js/projects.js` seguindo o modelo do comentário no topo do arquivo.
 - `frame: "desktop"` deixa o projeto em destaque, na largura toda, dentro de uma janela de navegador. `frame: "phone"` mostra só o celular; dois projetos `phone` seguidos ficam lado a lado.
-- `plate` é a cor da placa atrás do aparelho. Use uma cor da marca do próprio projeto.
-- Projeto real: `demo: false` e as capturas em `images.desktop`, `images.mobile` e `images.alt`. Com `url`, aparece o botão "Visitar o site".
-- Os três projetos atuais são demonstrativos (marcas fictícias) e aparecem com a legenda "Projeto demonstrativo · <tipo>". Quando entrar o primeiro projeto real, reescreva também o parágrafo de introdução da seção Projetos no `index.html`.
-- Cada demonstrativo usa a própria fonte (`concept.theme.font`: `garamond`, `syne` ou `nunito`), carregada só com os caracteres usados. Se mudar nomes ou títulos desses mockups com letras novas, confira o parâmetro `text=` do segundo link de fontes no `index.html`.
+- `plate` é a cor da placa atrás do aparelho. Use uma cor da marca do cliente.
+- Com `url`, aparece o botão "Visitar o site".
+- Use apenas projetos reais, com autorização do cliente.
 
 ## Identidade visual
 

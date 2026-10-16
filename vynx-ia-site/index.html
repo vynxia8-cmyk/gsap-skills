@@ -27,8 +27,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,24,500&family=Montserrat:wght@800&family=Schibsted+Grotesk:wght@400..600&display=swap">
   <!-- Bodoni reto só para os numerais e Montserrat 600 só para a palavra VYNXIA -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Montserrat:wght@600&text=01234VYNXIA&display=swap">
-  <!-- Fontes das marcas fictícias do portfólio (apenas os caracteres usados nos mockups) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Nunito:wght@800&family=Syne:wght@700&display=swap&text=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%C3%81%C3%82%C3%83%C3%87%C3%89%C3%8A%C3%8D%C3%93%C3%94%C3%95%C3%9A%C3%A1%C3%A2%C3%A3%C3%A7%C3%A9%C3%AA%C3%AD%C3%B3%C3%B4%C3%B5%C3%BA.%2C%20">
   <link rel="stylesheet" href="assets/css/styles.css">
 
   <script>
@@ -70,7 +68,7 @@
       <nav class="main-nav" aria-label="Navegação principal">
         <ul>
           <li><a href="#servicos">Serviços</a></li>
-          <li><a href="#projetos">Projetos</a></li>
+          <li data-projects-link hidden><a href="#projetos">Projetos</a></li>
           <li><a href="#diferenciais">Diferenciais</a></li>
           <li><a href="#processo">Processo</a></li>
         </ul>
@@ -90,7 +88,7 @@
     <nav aria-label="Menu principal">
       <ul class="mobile-menu-list">
         <li><a href="#servicos">Serviços</a></li>
-        <li><a href="#projetos">Projetos</a></li>
+        <li data-projects-link hidden><a href="#projetos">Projetos</a></li>
         <li><a href="#diferenciais">Diferenciais</a></li>
         <li><a href="#processo">Processo</a></li>
         <li><a href="#contato">Contato</a></li>
@@ -185,17 +183,16 @@
       </div>
     </section>
 
-    <!-- ============ 04 · Projetos ============ -->
-    <section class="section projects" id="projetos" aria-labelledby="proj-title">
+    <!-- ============ 04 · Projetos ============
+         Fica oculta enquanto assets/js/projects.js estiver vazio. Ao adicionar o primeiro
+         projeto real, a seção e os links "Projetos" do menu e do rodapé aparecem sozinhos. -->
+    <section class="section projects" id="projetos" aria-labelledby="proj-title" hidden data-projects-section>
       <div class="container">
         <div class="section-head proj-head">
           <h2 class="display" id="proj-title">Projetos digitais que valorizam marcas<span class="dot">.</span></h2>
-          <p class="section-intro">Os projetos abaixo são <strong>demonstrativos</strong>: marcas fictícias que a Vynx&nbsp;IA criou para mostrar como trabalha. Nenhum deles é de um cliente real.</p>
         </div>
 
-        <div class="project-list" data-projects>
-          <noscript><p class="noscript-note">Ative o JavaScript para visualizar os projetos.</p></noscript>
-        </div>
+        <div class="project-list" data-projects></div>
       </div>
     </section>
 
@@ -308,7 +305,7 @@
         <h2 class="footer-title" id="f-nav">Navegação</h2>
         <ul>
           <li><a href="#posicionamento">Quem somos</a></li>
-          <li><a href="#projetos">Projetos</a></li>
+          <li data-projects-link hidden><a href="#projetos">Projetos</a></li>
           <li><a href="#diferenciais">Diferenciais</a></li>
           <li><a href="#processo">Processo</a></li>
         </ul>

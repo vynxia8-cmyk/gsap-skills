@@ -158,77 +158,19 @@
     return node;
   }
 
-  /* Cada conceito demonstrativo tem a própria estrutura de página (concept.layout):
-     "split" e "center": abertura clássica com título, texto e botão;
-     "lookbook": marca grande e uma grade de peças, como numa vitrine de moda;
-     "list": a lista de serviços vem primeiro e o agendamento vira uma barra de largura total. */
-  function buildMini(concept, isPhone) {
-    var theme = concept.theme || {};
-    var layout = concept.layout || "split";
-    var mini = el("div", "mini mini--" + layout + (theme.font ? " mini--font-" + theme.font : "") + (isPhone ? " mini--phone" : ""));
-    mini.style.setProperty("--mini-bg", theme.bg);
-    mini.style.setProperty("--mini-fg", theme.fg);
-    mini.style.setProperty("--mini-muted", theme.muted);
-    mini.style.setProperty("--mini-accent", theme.accent);
-
-    var nav = el("div", "mini-nav");
-    nav.appendChild(el("b", "mini-logo", concept.brand));
-    (concept.nav || []).forEach(function (item) { nav.appendChild(el("span", "", item)); });
-    mini.appendChild(nav);
-
-    if (layout === "lookbook") {
-      mini.appendChild(el("b", "mini-h", concept.headline));
-      var grid = el("div", "mini-pieces");
-      (concept.pieces || []).forEach(function (piece) {
-        var tile = el("span", "mini-piece");
-        tile.style.setProperty("--tone", piece.tone);
-        tile.appendChild(el("span", "", piece.name));
-        grid.appendChild(tile);
-      });
-      mini.appendChild(grid);
-      mini.appendChild(el("span", "mini-btn", concept.cta));
-      return mini;
-    }
-
-    if (layout === "list") {
-      mini.appendChild(el("b", "mini-h", concept.headline));
-      var ul = el("ul", "mini-list");
-      (concept.list || []).forEach(function (item) { ul.appendChild(el("li", "", item)); });
-      mini.appendChild(ul);
-      if (concept.text) mini.appendChild(el("span", "mini-text", concept.text));
-      mini.appendChild(el("span", "mini-bar", concept.cta));
-      return mini;
-    }
-
-    var hero = el("div", "mini-hero");
-    var copy = el("div", "mini-copy");
-    if (concept.eyebrow) copy.appendChild(el("span", "mini-eyebrow", concept.eyebrow));
-    copy.appendChild(el("b", "mini-h", concept.headline));
-    if (concept.text) copy.appendChild(el("span", "mini-text", concept.text));
-    copy.appendChild(el("span", concept.ctaStyle === "link" ? "mini-link" : "mini-btn", concept.cta));
-    hero.appendChild(copy);
-    hero.appendChild(el("div", "mini-art art-" + (concept.art || "arch")));
-    mini.appendChild(hero);
-    return mini;
-  }
-
   function buildScreen(project, isPhone) {
-    if (project.images) {
-      var img = el("img");
-      img.src = isPhone ? project.images.mobile : project.images.desktop;
-      img.alt = isPhone ? "" : (project.images.alt || "Site " + project.title);
-      img.loading = "lazy";
-      img.decoding = "async";
-      return img;
-    }
-    var concept = Object.assign({ brand: project.title }, project.concept);
-    return buildMini(concept, isPhone);
+    var img = el("img");
+    img.src = isPhone ? project.images.mobile : project.images.desktop;
+    img.alt = isPhone ? "" : (project.images.alt || "Site " + project.title);
+    img.loading = "lazy";
+    img.decoding = "async";
+    return img;
   }
 
   function buildBrowser(project) {
     var browser = el("div", "browser");
-    // A barra nunca mostra um domínio: os demonstrativos não estão publicados
-    browser.appendChild(el("div", "browser-bar", project.title + (project.demo ? " · conceito demonstrativo" : "")));
+    browser.setAttribute("aria-hidden", "true");
+    browser.appendChild(el("div", "browser-bar", project.title));
     var view = el("div", "browser-view");
     view.appendChild(buildScreen(project, false));
     browser.appendChild(view);
@@ -243,9 +185,10 @@
     return phone;
   }
 
+  // A seção e os links "Projetos" só aparecem quando há pelo menos um projeto em projects.js
   function renderProjects() {
     var list = document.querySelector("[data-projects]");
-    var projects = window.VYNX_PROJECTS || [];
+    var projects = (window.VYNX_PROJECTS || []).filter(function (p) { return p && p.images; });
     if (!list || !projects.length) return;
 
     projects.forEach(function (project) {
@@ -255,25 +198,16 @@
       var media = el("div", "project-media");
       media.style.setProperty("--plate", project.plate || "#1c201e");
       if (wide) media.appendChild(buildBrowser(project));
-      media.appendChild(buildPhone(project));
-      if (project.demo) {
-        media.setAttribute("role", "img");
-        media.setAttribute("aria-label", "Projeto demonstrativo " + project.title + ": prévia da página inicial");
-        Array.prototype.forEach.call(media.children, function (child) { child.setAttribute("aria-hidden", "true"); });
-      }
+      var phone = buildPhone(project);
+      if (wide) phone.setAttribute("aria-hidden", "true");
+      media.appendChild(phone);
 
       var info = el("div", "project-info");
-      var meta = el("p", "project-meta");
-      if (project.demo) {
-        meta.appendChild(el("span", "project-demo", "Projeto demonstrativo"));
-        meta.appendChild(el("span", "project-sep", " · "));
-      }
-      meta.appendChild(document.createTextNode(project.type));
-      info.appendChild(meta);
+      info.appendChild(el("p", "project-meta", project.type));
       info.appendChild(el("h3", "project-title", project.title));
       info.appendChild(el("p", "project-summary", project.summary));
       if (project.url) {
-        var link = el("a", "btn btn--ghost btn--small project-link", project.demo ? "Abrir o conceito demonstrativo" : "Visitar o site");
+        var link = el("a", "btn btn--ghost btn--small project-link", "Visitar o site");
         link.href = project.url;
         link.target = "_blank";
         link.rel = "noopener";
@@ -284,6 +218,8 @@
       article.appendChild(info);
       list.appendChild(article);
     });
+
+    document.querySelectorAll("[data-projects-section], [data-projects-link]").forEach(function (node) { node.hidden = false; });
   }
 
   /* ---------- Movimento (GSAP + ScrollTrigger) ----------
